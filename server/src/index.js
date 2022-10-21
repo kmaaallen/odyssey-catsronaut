@@ -1,7 +1,9 @@
-const {ApolloServer} = require('apollo-server');
-const typeDefs = require('./schema');
+const { ApolloServer } = require("apollo-server");
+const typeDefs = require("./schema");
+const resolvers = require("./resolvers");
+const TrackAPI = require("./datasources/track-api");
 
-const mocks = {
+/*const mocks = {
   Query: () => ({
     tracksForHome: () => [...new Array(6)]
   }),
@@ -21,13 +23,22 @@ const mocks = {
       modulesCount: () => 6
     })
   };
+*/
 
-const server = new ApolloServer({typeDefs, mocks});
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  dataSources: () => {
+    return {
+      trackAPI: new TrackAPI(),
+    };
+  },
+});
 
 server.listen().then(() => {
-    console.log(`
+  console.log(`
       🚀  Server is running!
       🔉  Listening on port 4000
       📭  Query at http://localhost:4000
     `);
-  });
+});
